@@ -1,0 +1,28 @@
+{
+  "name": "lab1",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "start": "node start.js",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/artemkharkovnyk/scriptProgrammingLanguagesLabs.git"
+  },
+  "author": "Artem Kharkovnyk",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/artemkharkovnyk/scriptProgrammingLanguagesLabs/issues"
+  },
+  "homepage": "https://github.com/artemkharkovnyk/scriptProgrammingLanguagesLabs#readme",
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "jest": "^29.5.0",
+    "supertest": "^6.3.3"
+  }
+}
