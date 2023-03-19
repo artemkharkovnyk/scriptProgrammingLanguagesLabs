@@ -7,3 +7,5 @@ Group: KI-191
 lab1: First steps to Node.JS. Got acquainted with: Express, Jest , Supertest, dotenv.
 
 lab2: Middleware and routing.
+
+lab3: Experience with Mongodb 
