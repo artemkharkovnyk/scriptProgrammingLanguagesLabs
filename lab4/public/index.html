@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Animals list</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" />
+</head>
+<body>
+    <h2>Animals list</h2>
+    <form name="animalForm">
+        <input type="hidden" name="id" value="0" />
+        <div class="form-group">
+            <label for="type">type:</label>
+            <input class="form-control" name="type" />
+        </div>
+        <div class="form-group">
+            <label for="name">name:</label>
+            <input class="form-control" name="name" />
+        </div>
+        <div class="form-group">
+            <label for="age">age:</label>
+            <input class="form-control" name="age" />
+        </div>
+        <div class="panel-body">
+            <button type="submit" class="btn btn-sm btn-primary">Store</button>
+            <a id="reset" class="btn btn-sm btn-primary">Clear</a>
+        </div>
+    </form>
+    <table class="table table-condensed table-striped table-bordered">
+        <thead><tr><th>Id</th><th>type</th><th>name</th><th>age</th></tr></thead>
+        <tbody>
+        </tbody>
+    </table>
+   
+    <script>
+    // Getting all animals
+        async function GetAnimals() {
+            const response = await fetch("/animals", {
+                method: "GET",
+                headers: { "Accept": "application/json" }
+            });
+
+            // sucesfull responce case
+            if (response.ok === true) {
+                // getting data
+                const animals = await response.json();
+                let rows = document.querySelector("tbody"); 
+                
+                animals.forEach(animal => {
+    
+                    rows.append(row(animal));
+                });
+            }
+        }
+        // Getting one animal
+        async function GetAnimal(id) {
+            const response = await fetch("/animal/" + id, {
+                method: "GET",
+                headers: { "Accept": "application/json" }
+            });
+            if (response.ok === true) {
+                const animal = await response.json();
+                const form = document.forms["animalForm"];
+                form.elements["id"].value = animal._id;
+                form.elements["name"].value = animal.name;
+                form.elements["age"].value = animal.age;
+                form.elements["type"].value = animal.type;
+            }
+        }
+        // Adding animal
+        async function CreateAnimal(typea, animalName, animalAge) {
+            const response = await fetch("/animal", {
+                method: "POST",
+                headers: { "Accept": "application/json", "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    type: typea,
+                    name: animalName,
+                    age: animalAge
+                })
+            });
+            if (response.ok === true) {
+                const animal = await response.json();
+                reset();
+                document.querySelector("tbody").append(row(animal));
+            }
+        }
+        // Animal changing 
+        async function EditAnimal(animalId, animalType, animalName, animalAge) {
+            const response = await fetch("/animal", {
+                method: "PUT",
+                headers: { "Accept": "application/json", "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    id: animalId,
+                    type: animalType,
+                    name: animalName,
+                    age: animalAge
+                })
+            });
+            if (response.ok === true) {
+                const animal = await response.json();
+                reset();
+                document.querySelector("tr[data-rowid='" + animal._id + "']").replaceWith(row(animal));
+            }
+        }
+        // Animal deleting
+        async function DeleteAnimal(id) {
+            const response = await fetch("/animal/" + id, {
+                method: "DELETE",
+                headers: { "Accept": "application/json" }
+            });
+            if (response.ok === true) {
+                const animal = await response.json();
+                document.querySelector("tr[data-rowid='" + animal._id + "']").remove();
+            }
+        }
+  
+        // form reset
+        function reset() {
+            const form = document.forms["animalForm"];
+            form.reset();
+            form.elements["id"].value = 0;
+        }
+        // table row creating
+        function row(animal) {
+            
+
+            const tr = document.createElement("tr");
+            tr.setAttribute("data-rowid", animal._id);
+            
+            const idTd = document.createElement("td");
+            idTd.append(animal._id);
+            tr.append(idTd);
+  
+            const typeTd = document.createElement("td");
+            typeTd.append(animal.type);
+            tr.append(typeTd);
+  
+            const nameTd = document.createElement("td");
+            nameTd.append(animal.name);
+            tr.append(nameTd);
+
+            const ageTd = document.createElement("td");
+            ageTd.append(animal.age);
+            tr.append(ageTd);
+              
+            const linksTd = document.createElement("td");
+  
+            const editLink = document.createElement("a");
+            editLink.setAttribute("data-id", animal._id);
+            editLink.setAttribute("style", "cursor:pointer;padding:15px;");
+            editLink.append("Edit");
+            editLink.addEventListener("click", e => {
+  
+                e.preventDefault();
+                GetAnimal(animal._id);
+            });
+            linksTd.append(editLink);
+  
+            const removeLink = document.createElement("a");
+            removeLink.setAttribute("data-id", animal._id);
+            removeLink.setAttribute("style", "cursor:pointer;padding:15px;");
+            removeLink.append("Delete");
+            removeLink.addEventListener("click", e => {
+  
+                e.preventDefault();
+                DeleteAnimal(animal._id);
+            });
+  
+            linksTd.append(removeLink);
+            tr.appendChild(linksTd);
+  
+            return tr;
+        }
+        // reset form data
+        document.getElementById("reset").click(function (e) {
+  
+            e.preventDefault();
+            reset();
+        })
+  
+        // form sending
+        document.forms["animalForm"].addEventListener("submit", e => {
+            e.preventDefault();
+            const form = document.forms["animalForm"];
+            const id = form.elements["id"].value;
+            const type = form.elements["type"].value;
+            const name = form.elements["name"].value;
+            const age = form.elements["age"].value;
+            if (id == 0)
+                CreateAnimal(type, name, age);
+            else
+                EditAnimal(id, type, name, age);
+        });
+  
+        // Animals loading
+        GetAnimals();
+    </script>
+</body>
+</html>
